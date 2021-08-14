@@ -1,5 +1,5 @@
 defmodule StreamerTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   describe "start_streaming/1" do
     test "should start streaming a valid exchange" do

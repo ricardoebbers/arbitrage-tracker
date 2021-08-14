@@ -27,10 +27,10 @@ defmodule Streamer.Coincap do
     |> EventFilter.filter()
     |> case do
       {:ok, %TradeEvent{} = event} ->
-        Logger.debug("Pushing event from #{event.exchange} - #{event.pair} @ #{event.price} ")
+        # Logger.debug("Pushing event from #{event.exchange} - #{event.pair} @ #{event.price} ")
 
         Phoenix.PubSub.broadcast(
-          Streamer.PubSub,
+          Kirin.PubSub,
           "TRADE_EVENTS:#{event.exchange}",
           event
         )

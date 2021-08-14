@@ -5,22 +5,29 @@ import { ChartItem } from 'src/app/shared/models/chartItem.model';
 
 @Injectable()
 export class ChartController {
-  private binanceChartItem = new ChartItem('binance');
-  private krakenChartItem = new ChartItem('kraken');
+  private chartItemA: ChartItem;
+  private chartItemB: ChartItem;
   private readonly chartListSubject: Subject<[ChartItem, ChartItem]> = new Subject<[ChartItem, ChartItem]>();
 
   constructor(
   ) {
   }
 
-  public newKrakenExchange(exchange: IExchange): void {
-    this.krakenChartItem.addExchange(exchange);
-    this.chartListSubject.next([this.binanceChartItem, this.krakenChartItem])
+  public newExchanges(exchanges: [IExchange, IExchange]): void {
+    if (!this.chartItemA) {
+      this.chartItemA = new ChartItem(exchanges[0].exchange)
+    }
+    if (!this.chartItemB) {
+      this.chartItemB = new ChartItem(exchanges[1].exchange)
+    }
+    this.chartItemA.name === exchanges[0].exchange ? this.addExchanges(exchanges[0], exchanges[1]) : this.addExchanges(exchanges[1], exchanges[0])
+
+    this.chartListSubject.next([this.chartItemA, this.chartItemB])
   }
 
-  public newBinanceExchange(exchange: IExchange): void {
-    this.binanceChartItem.addExchange(exchange);
-    this.chartListSubject.next([this.binanceChartItem, this.krakenChartItem])
+  public addExchanges(exchangeA: IExchange, exchangeB: IExchange): void {
+    this.chartItemA.addExchange(exchangeA);
+    this.chartItemB.addExchange(exchangeB);
   }
 
   public subscribeChartItemList(): Observable<[ChartItem, ChartItem]> {

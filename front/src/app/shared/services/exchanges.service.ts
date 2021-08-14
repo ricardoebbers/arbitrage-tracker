@@ -7,49 +7,37 @@ import { IExchange } from '../interfaces/exchange';
 })
 export class ExchangesService {
 
-  private readonly newBinanceExchangeSubject: Subject<IExchange> = new Subject<IExchange>();
-  private readonly newKrakenExchangeSubject: Subject<IExchange> = new Subject<IExchange>();
+  private readonly newExchangesSubject: Subject<[IExchange, IExchange]> = new Subject<[IExchange, IExchange]>();
 
   constructor() {
-    this.startBinanceData();
-    this.startKrakenData();
+    this.startGettingExchangeData();
   }
 
-  private startBinanceData(): void {
-    const generateExchange = () => {
-        const exchange: IExchange = {
-            exchange: "binance",
-            pair: "btc/usd",
-            price: Math.floor(Math.random() * 10) + 1,
-            volume: Math.floor(Math.random() * 1000) + 1,
-            timestamp: new Date().getTime(),
-            priceUsd: Math.floor(Math.random() / 1000),
-        }
-        this.newBinanceExchangeSubject.next(exchange)
+  private startGettingExchangeData(): void {
+    const generateExchanges = () => {
+      const timestamp = new Date().getTime();
+      const exchangeBinance: IExchange = {
+          exchange: "binance",
+          pair: "btc/usd",
+          price: Math.floor(Math.random() * 10) + 1,
+          volume: Math.floor(Math.random() * 1000) + 1,
+          timestamp: timestamp,
+          priceUsd: Math.floor(Math.random() / 1000),
+      }
+      const exchangeHuobi: IExchange = {
+        exchange: "huobi",
+        pair: "btc/usd",
+        price: Math.floor(Math.random() * 10) + 1,
+        volume: Math.floor(Math.random() * 1000) + 1,
+        timestamp: timestamp,
+        priceUsd: Math.floor(Math.random() / 1000),
+      }
+      this.newExchangesSubject.next([exchangeBinance, exchangeHuobi])
     }
-    setInterval(generateExchange, 2000)
+    setInterval(generateExchanges, 2000)
   }
 
-  private startKrakenData(): void {
-    const generateExchange = () => {
-        const exchange: IExchange = {
-            exchange: "kraken",
-            pair: "btc/usd",
-            price: Math.floor(Math.random() * 10) + 1,
-            volume: Math.floor(Math.random() * 1000) + 1,
-            timestamp: new Date().getTime(),
-            priceUsd: Math.floor(Math.random() / 1000),
-        }
-        this.newKrakenExchangeSubject.next(exchange)
-    }
-    setInterval(generateExchange, 2000)
-  }
-
-  public subscribeNewBinanceExchanges(): Observable<IExchange> {
-    return this.newBinanceExchangeSubject.asObservable()
-  }
-
-  public subscribeNewKrakenExchanges(): Observable<IExchange> {
-    return this.newKrakenExchangeSubject.asObservable()
+  public subscribeNewExchanges(): Observable<[IExchange, IExchange]> {
+    return this.newExchangesSubject.asObservable()
   }
 }

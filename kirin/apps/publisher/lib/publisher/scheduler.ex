@@ -24,20 +24,16 @@ defmodule Publisher.Scheduler do
   end
 
   def handle_info(:tick, state) do
-    state
-    |> Enum.reduce(nil, fn event, acc -> TradeEvent.merge_volumes(event, acc) end)
-    |> case do
-      nil ->
-        nil
+    last_event =
+      state
+      |> Enum.reduce(hd(state), fn event, acc -> TradeEvent.merge_volumes(event, acc) end)
+      |> Map.put(:timestamp, :os.system_time(:seconds))
+      |> IO.inspect()
 
-      event ->
-        event
-        |> IO.inspect()
-        |> Publisher.AMQP.publish()
-    end
+    Publisher.AMQP.publish(last_event)
 
     Process.send_after(self(), :tick, @one_second)
 
-    {:noreply, []}
+    {:noreply, [last_event |> Map.put(:volume, 0)]}
   end
 end

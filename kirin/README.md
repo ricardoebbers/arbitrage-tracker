@@ -1,4 +1,0 @@
-# Kirin
-
-**TODO: Add description**
-

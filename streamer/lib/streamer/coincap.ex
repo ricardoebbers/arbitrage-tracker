@@ -2,7 +2,7 @@ defmodule Streamer.Coincap do
   use WebSockex
   require Logger
 
-  alias Streamer.TradeEvent
+  alias Streamer.{EventFilter, TradeEvent}
 
   @base_url "wss://ws.coincap.io/trades/"
   def start_link(exchange) do
@@ -22,17 +22,21 @@ defmodule Streamer.Coincap do
   end
 
   defp process_event(event) do
-    trade_event = TradeEvent.new(event)
+    event
+    |> TradeEvent.new()
+    |> EventFilter.filter()
+    |> case do
+      {:ok, %TradeEvent{} = event} ->
+        Logger.debug("Pushing event from #{event.exchange} - #{event.pair} @ #{event.price} ")
 
-    Logger.debug(
-      "Trade event received " <>
-        "#{trade_event.pair}@#{trade_event.price}"
-    )
+        Phoenix.PubSub.broadcast(
+          Streamer.PubSub,
+          "TRADE_EVENTS:#{event.exchange}",
+          event
+        )
 
-    Phoenix.PubSub.broadcast(
-      Streamer.PubSub,
-      "TRADE_EVENTS:#{trade_event.exchange}",
-      trade_event
-    )
+      {:pass} ->
+        {:ok}
+    end
   end
 end

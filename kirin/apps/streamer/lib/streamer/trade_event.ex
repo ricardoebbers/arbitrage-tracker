@@ -24,18 +24,14 @@ defmodule Streamer.TradeEvent do
     }
   end
 
-  def merge_volumes(first, nil) do
-    first
-  end
-
   def merge_volumes(first = %TradeEvent{}, second = %TradeEvent{}) do
     %TradeEvent{
-      exchange: first.exchange,
-      pair: first.pair,
-      price: first.price,
-      volume: first.volume + second.volume,
-      timestamp: first.timestamp,
-      priceUsd: first.priceUsd
+      exchange: second.exchange,
+      pair: second.pair,
+      price: second.price,
+      volume: second.volume + first.volume,
+      timestamp: second.timestamp,
+      priceUsd: second.priceUsd
     }
   end
 end

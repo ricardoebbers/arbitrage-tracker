@@ -22,8 +22,7 @@ export class ChartComponent implements OnInit, OnDestroy{
     this.chartItemsSubscription = this.chartSandbox.getChartList().subscribe(chartLists => {
       this.chartItems = chartLists
     })
-    this.chartSandbox.setupBinanceExchanges();
-    this.chartSandbox.setupKrakenExchanges();
+    this.chartSandbox.setupExchanges();
   }
 
   ngOnDestroy(): void {

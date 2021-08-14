@@ -13,15 +13,9 @@ export class ChartSandbox {
   ) {
   }
 
-  public setupKrakenExchanges(): void {
-    this.exchangesService.subscribeNewKrakenExchanges().subscribe( exchange => {
-      this.chartController.newKrakenExchange(exchange)
-    });
-  }
-
-  public setupBinanceExchanges(): void {
-    this.exchangesService.subscribeNewBinanceExchanges().subscribe( exchange => {
-      this.chartController.newBinanceExchange(exchange)
+  public setupExchanges(): void {
+    this.exchangesService.subscribeNewExchanges().subscribe( exchanges => {
+      this.chartController.newExchanges(exchanges)
     });
   }
 

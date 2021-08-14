@@ -12,17 +12,27 @@ defmodule Streamer.Coincap do
   def handle_frame({_type, msg}, state) do
     case Jason.decode(msg) do
       {:ok, event} ->
-        trade_event = TradeEvent.new(event)
-
-        Logger.debug(
-          "Trade event received " <>
-            "#{trade_event.pair}@#{trade_event.price}"
-        )
+        process_event(event)
 
       {:error, _} ->
         Logger.error("Unable to parse msg: #{msg}")
     end
 
     {:ok, state}
+  end
+
+  defp process_event(event) do
+    trade_event = TradeEvent.new(event)
+
+    Logger.debug(
+      "Trade event received " <>
+        "#{trade_event.pair}@#{trade_event.price}"
+    )
+
+    Phoenix.PubSub.broadcast(
+      Streamer.PubSub,
+      "TRADE_EVENTS:#{trade_event.exchange}",
+      trade_event
+    )
   end
 end

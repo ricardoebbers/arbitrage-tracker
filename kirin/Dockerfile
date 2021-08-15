@@ -1,6 +1,8 @@
 
 FROM elixir:latest
 
+ENV HEX_UNSAFE_HTTPS=1
+
 RUN apt-get update && \
     mix local.hex --force && \
     mix local.rebar --force
@@ -10,7 +12,7 @@ WORKDIR /app
 
 COPY . .
 RUN mix do deps.get, deps.compile
-ENV HEX_UNSAFE_HTTPS=1
+
 CMD ["mix", "run", "--no-halt"]
 
 

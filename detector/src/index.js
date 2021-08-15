@@ -15,8 +15,8 @@ module.exports = function calculateExpectedProfit(exchangeA, exchangeB, minProfi
   const profitB = profitOnBuyFromX(exchangeB, exchangeA, investment);
 
   return profitA > profitB 
-  ? makeResultObject(profitA, exchangeA.exchange, minProfit, investment) 
-  : makeResultObject(profitB, exchangeB.exchange, minProfit, investment)
+  ? makeResultObject(profitA, exchangeA.exchange, exchangeB.exchange, minProfit, investment) 
+  : makeResultObject(profitB, exchangeB.exchange, exchangeA.exchange, minProfit, investment)
 }
   
 function profitOnBuyFromX(exchangeX, exchangeY, investment) {
@@ -29,10 +29,11 @@ function profitOnBuyFromX(exchangeX, exchangeY, investment) {
   return profit;
 }
 
-function makeResultObject(profit, exchange, minProfit, investment) {
+function makeResultObject(profit, buyAt, sellAt, minProfit, investment) {
   if (profit > (investment * minProfit)) {
     return {
-      exchange,
+      buyAt,
+      sellAt,
       profit,
       profitability: (profit / investment) * 100,
       investment,

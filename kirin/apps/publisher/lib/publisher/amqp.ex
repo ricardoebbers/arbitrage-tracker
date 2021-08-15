@@ -9,7 +9,7 @@ defmodule Publisher.AMQP do
     queue = fetch_queue_name()
     expiration_time = fetch_expiration_time()
 
-    case AMQP.Application.get_channel(:mychan) do
+    case AMQP.Application.get_channel() do
       {:ok, chan} ->
         Logger.info("Publishing payload to queue '#{queue}': #{inspect(payload)}")
         AMQP.Queue.declare(chan, queue, durable: true)

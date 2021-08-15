@@ -19,11 +19,11 @@ defmodule Publisher.DynamicPublisherSupervisor do
   def start_publishing(exchanges) when is_list(exchanges) do
     case get_pid() do
       nil ->
-        Logger.info("Starting publishing #{exchanges} events")
+        Logger.info("Starting publishing #{inspect(exchanges)} events")
         {:ok, _pid} = start_publisher(exchanges)
 
       pid ->
-        Logger.warn("Publishing #{exchanges} events already started")
+        Logger.warn("Publishing #{inspect(exchanges)} events already started")
         {:ok, pid}
     end
   end
@@ -31,10 +31,10 @@ defmodule Publisher.DynamicPublisherSupervisor do
   def stop_publishing(exchanges) when is_list(exchanges) do
     case get_pid() do
       nil ->
-        Logger.warn("Publishing #{exchanges} events already stopped")
+        Logger.warn("Publishing #{inspect(exchanges)} events already stopped")
 
       pid ->
-        Logger.info("Stopping publishing #{exchanges} events")
+        Logger.info("Stopping publishing #{inspect(exchanges)} events")
 
         :ok =
           DynamicSupervisor.terminate_child(

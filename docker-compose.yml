@@ -1,0 +1,23 @@
+version: "3.2"
+services:
+  kirin:
+    container_name: kirin
+    build: kirin/.
+    depends_on:
+      - rabbitmq
+    networks:
+      - arbitrage
+    env_file:
+      - .env
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - arbitrage
+
+networks:
+  arbitrage:
+    driver: bridge

@@ -11,7 +11,7 @@ module.exports = class RabbitBroker {
   }
 
   async subscribe(callback) {
-    await this.channel.consume(QUEUE_NAME, callback)
+    await this.channel.consume(QUEUE_NAME, callback, { noAck: true })
   }
 
   async getAllAvailableMessages() {

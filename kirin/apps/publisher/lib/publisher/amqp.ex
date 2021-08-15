@@ -11,7 +11,6 @@ defmodule Publisher.AMQP do
 
     case AMQP.Application.get_channel() do
       {:ok, chan} ->
-        Logger.info("Publishing payload to queue '#{queue}': #{inspect(payload)}")
         AMQP.Queue.declare(chan, queue, durable: true)
         AMQP.Basic.publish(chan, "", queue, Jason.encode!(payload), expiration: expiration_time)
 

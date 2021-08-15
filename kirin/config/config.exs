@@ -7,6 +7,7 @@ config :amqp,
   queue_name: System.get_env("QUEUE_NAME", "arbitrage")
 
 config :streamer,
+  # exchanges with streaming: "binance,huobi,hitbtc,zb,gdax,bitfinex,bitstamp,poloniex,gemini,luno,bitso,therocktrading,coinmate"
   exchanges: System.get_env("EXCHANGES", "binance,huobi") |> String.split(",")
 
 config :publisher,

@@ -18,4 +18,4 @@ const coins = [
   }
 ];
 
-console.log(calculator(coins[0], coins[1], 0.10, 1))
+console.log(calculator(coins, 0.10, 100))

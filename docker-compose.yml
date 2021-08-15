@@ -12,8 +12,9 @@ services:
       - back
     networks:
       - arbitrage
-    env_file:
-      - .env
+    volumes:
+      - /app/node_modules
+      - ./front:/app
   back:
     container_name: back
     build: back/.
@@ -26,6 +27,9 @@ services:
       - 9191:9191
     networks:
       - arbitrage
+    volumes:
+      - /app/node_modules
+      - ./back/src:/app/src
   kirin:
     container_name: kirin
     build: kirin/.
@@ -38,6 +42,9 @@ services:
       - arbitrage
     env_file:
       - .env
+    volumes:
+      - ./kirin:/app
+      - /app/deps
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq

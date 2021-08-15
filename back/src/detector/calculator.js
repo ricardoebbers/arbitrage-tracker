@@ -1,32 +1,34 @@
 const DEBUG = false;
 
-module.exports = function calculateExpectedProfit(exchangeA, exchangeB, minProfit=0.05, investment=100) {
-  const profitA = profitOnBuyFromX(exchangeA, exchangeB, investment) * (exchangeA.priceUsd || exchangeA.price);
-  const profitB = profitOnBuyFromX(exchangeB, exchangeA, investment) * (exchangeB.priceUsd || exchangeB.price);
+module.exports = function calculateExpectedProfit(exchangeA, exchangeB, investment) {
+  const profitA = profitOnBuyFromX(exchangeA, exchangeB, investment);
+  const profitB = profitOnBuyFromX(exchangeB, exchangeA, investment);
   if (DEBUG) console.table({ [exchangeA.exchange]: profitA, [exchangeB.exchange]: profitB });
-  return profitA > profitB 
-  ? makeResultObject(profitA, exchangeA.exchange, exchangeB.exchange, minProfit, investment) 
-  : makeResultObject(profitB, exchangeB.exchange, exchangeA.exchange, minProfit, investment)
+  return makeResult(profitA, profitB, exchangeA.exchange, exchangeB.exchange, investment);
+
 }
   
 function profitOnBuyFromX(exchangeX, exchangeY, investment) {
-  const priceX = investment / (exchangeX.priceUsd || exchangeX.price);
-  const priceY = investment / (exchangeY.priceUsd || exchangeY.price);
   const { buyTax, buyCost } = exchangeX.data;
   const { sellTax, sellCost } = exchangeY.data;
 
-  const profit = ((priceX - buyCost) * (1 - buyTax)) - ((priceY - sellCost) * (1 - sellTax));
-  return profit;
+  const coinsBought = ((investment * (1-buyTax)) - buyCost) / exchangeX.price;
+  const sale = coinsBought * exchangeY.price;
+  const taxedSale = (sale * (1-sellTax)) - sellCost;
+  return taxedSale - investment;
 }
 
-function makeResultObject(profit, buyAt, sellAt, minProfit, investment) {
-  if (profit > (investment * minProfit)) {
+function makeResult(profitA, profitB, exchangeA, exchangeB, investment) {
+  const resultA = makeResultObject(profitA, exchangeA, exchangeB, investment);
+  const resultB = makeResultObject(profitB, exchangeB, exchangeA, investment);
+  return [ resultA, resultB ]
+}
+
+function makeResultObject(profit, buyAt, sellAt, investment) {  
     return {
       buyAt,
       sellAt,
       profit,
-      profitability: (profit / investment) * 100,
       investment,
     };
-  }
 }

@@ -22,11 +22,12 @@ async function startServer() {
       rabbitSubscribed = true;
       rabbit.subscribe((msg) => {
         onEvent(msg);
+        return false;
       })
     }
 
     ws.on("close", () => {
-      console.log("Connection closed");
+      process.stdout.write("x")
       listeners.splice(listeners.indexOf(ws), 1);
     })
   });

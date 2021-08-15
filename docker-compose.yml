@@ -4,7 +4,7 @@ services:
     container_name: front
     build: front/.
     ports:
-      - 4200:80
+      - 4200:4200
     restart: on-failure
     depends_on:
       - back
@@ -23,7 +23,7 @@ services:
     links: 
       - rabbitmq
     ports:
-      - 9091:9091
+      - 9191:9191
     networks:
       - arbitrage
   kirin:
@@ -46,11 +46,6 @@ services:
       - 15672:15672
     networks:
       - arbitrage
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:15672"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
 networks:
   arbitrage:

@@ -1,28 +1,62 @@
 const WebSocketServer = require('ws').Server;
 const Rabbit = require('./rabbit');
+const OpportunityDetector = require("./detector");
+require('dotenv').config();
+
+const WS_PORT = process.env.WS_PORT;
+const WS_PATH = process.env.WS_PATH;
+
+
+const DEBUG = false;
 
 const listeners = []
+let rabbitSubscribed = false;
+
 async function startServer() {
+  wss = new WebSocketServer({ port: WS_PORT, path: WS_PATH });
   const rabbit = await (new Rabbit()).initialize();
-  wss = new WebSocketServer({port: 9191, path: '/'});
 
   wss.on('connection', async function(ws) {
-    const history = await rabbit.getAllAvailableMessages()
-    console.log(`New consumer, sending all ${history ? history.length : null} messages`)
-    await ws.send(JSON.stringify(history));
-    listeners.push(ws);
+    onNewConnection(ws, rabbit);
+    if (!rabbitSubscribed) {   
+      rabbitSubscribed = true;
+      rabbit.subscribe((msg) => {
+        onEvent(msg);
+      })
+    }
 
-    ws.on("close", () => { 
+    ws.on("close", () => {
+      console.log("Connection closed");
       listeners.splice(listeners.indexOf(ws), 1);
     })
   });
+}
 
-  rabbit.subscribe((msg) => {
-    if (!msg) return;
-    const message = msg.content.toString()
-    console.log(`New message: ${message}`);
-    listeners.forEach(ws => ws.send(message));
-  })
+async function onEvent(msg) {
+  process.stdout.write(".")
+  if (!msg) return;
+  try {
+    const message = JSON.parse(msg.content.toString())
+    if (!message.events) return process.stdout.write("?");
+    if (DEBUG) console.log(message.events);
+    message.opportunities = OpportunityDetector(message.events)
+    if (message.opportunities.length) process.stdout.write("$");
+    listeners.forEach(ws => ws.send(JSON.stringify(message)))
+  } catch (e) {
+    console.log(e)
+    process.stdout.write("!")
+  }
+}
+
+async function onNewConnection(ws, rabbit) {
+  // TODO: Not working because messages are getting deleted on ACK
+  // const history = await rabbit.getAllAvailableMessages();
+  // process.stdout.write(history ? history.length.toString() : "-1")
+  // for (let oldMessage of history) {
+  //   await ws.send(JSON.stringify(oldMessage));
+  // }
+  process.stdout.write("*")
+  listeners.push(ws);
 }
 
 startServer()

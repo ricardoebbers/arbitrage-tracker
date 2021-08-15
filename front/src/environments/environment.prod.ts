@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  websocket_url: 'ws://back:9191'
 };

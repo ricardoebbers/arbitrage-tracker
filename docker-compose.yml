@@ -27,6 +27,9 @@ services:
       - 9191:9191
     networks:
       - arbitrage
+    volumes:
+      - /app/node_modules
+      - ./back/src:/app/src
   kirin:
     container_name: kirin
     build: kirin/.

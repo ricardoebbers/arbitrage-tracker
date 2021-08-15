@@ -2,24 +2,12 @@ const amqp = require('amqplib')
 
 const QUEUE_NAME = "arbitrage"
 
-class RabbitBroker {
-  static instance;
-
-  constructor() {
-  }
-
-  async connect() {
+module.exports = class RabbitBroker {  
+  async initialize() {
     this.connection = await amqp.connect("amqp://localhost");
     this.channel = await this.connection.createChannel();
     await this.channel.assertQueue(QUEUE_NAME, { durable: true })
-    return this
-  }
-
-  async disconnect() {
-    await this.channel.close()
-    await this.connection.close()
-    this.queue = null
-    this.exchange = null
+    return this;
   }
 
   async subscribe(callback) {
@@ -30,22 +18,9 @@ class RabbitBroker {
     const messages = []
     let message = await this.channel.get(QUEUE_NAME)
     while (message) {
-      messages.push(JSON.parse(message.content.toString()))
+      messages.push(message.content.toString())
       message = await this.channel.get(QUEUE_NAME)
     }
     return messages
   }
-
-  bufferToJson(message) {
-    return JSON.parse(message.content.toString())
-  }
-}
-
-module.exports = async function getInstance() {
-  if (!RabbitBroker.instance) {
-    console.log("Creating new instance of Rabbit")
-    RabbitBroker.instance = new RabbitBroker()
-    await RabbitBroker.instance.connect()
-  }
-  return RabbitBroker.instance
 }

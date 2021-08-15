@@ -28,33 +28,40 @@ defmodule Publisher.Buffer do
 
   def handle_info(event = %TradeEvent{exchange: exchange}, state) do
     {:noreply,
-     Map.update(state, exchange, event, fn existing_event ->
-       TradeEvent.merge_volumes(existing_event, event)
-     end)}
+     Map.update(state, exchange, [event], fn existing_events -> [event | existing_events] end)}
   end
 
   def handle_info(:tick, state) do
-    # %{"binance" => binance_event, "huobi" => huobi_event} => %{timestamp: :os.system_time(:seconds), events: [binance_event, huobi_event]}
-    payload =
-      state
-      |> Enum.reduce(
-        %{timestamp: :os.system_time(:seconds), events: []},
-        fn {_exchange, event}, acc ->
-          Map.update(acc, :events, [], fn existing_events -> [event | existing_events] end)
-        end
-      )
-
-    Publisher.AMQP.publish(payload)
-
-    # zera os volumes dos eventos
-    new_state =
-      state
-      |> Enum.reduce(%{}, fn {exchange, event}, acc ->
-        Map.put(acc, exchange, event |> Map.put(:volume, 0))
-      end)
-
     Process.send_after(self(), :tick, @one_second)
 
-    {:noreply, new_state}
+    state
+    |> build_payload()
+    |> Publisher.AMQP.publish()
+
+    {:noreply, update_state(state)}
+  end
+
+  defp build_payload(state) do
+    acc = %{timestamp: :os.system_time(:seconds), events: []}
+    Enum.reduce(state, acc, &merge_events/2)
+  end
+
+  defp merge_events({_exchange, events}, map) do
+    Map.update(map, :events, [], fn other_exchange_events ->
+      [merge_volumes(events) | other_exchange_events]
+    end)
+  end
+
+  defp merge_volumes(events) do
+    Enum.reduce(events, &TradeEvent.merge_volumes/2)
+  end
+
+  # guarda apenas o último evento de cada exchange e zera os volumes
+  defp update_state(state) do
+    Enum.reduce(state, %{}, &update_exchange_events/2)
+  end
+
+  defp update_exchange_events({exchange, events}, map) do
+    Map.put(map, exchange, [hd(events) |> Map.put(:volume, 0)])
   end
 end

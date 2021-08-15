@@ -1,7 +1,5 @@
 defmodule Publisher.AMQP do
-  alias Streamer.TradeEvent
-
-  @expiration 900_000
+  @expiration 60_000
   @queue "arbitrage"
 
   def publish(nil), do: {:pass}
@@ -10,8 +8,7 @@ defmodule Publisher.AMQP do
     case AMQP.Application.get_channel(:mychan) do
       {:ok, chan} ->
         AMQP.Queue.declare(chan, @queue, durable: true)
-        message = Jason.encode!(events)
-        AMQP.Basic.publish(chan, "", @queue, message, expiration: @expiration)
+        AMQP.Basic.publish(chan, "", @queue, Jason.encode!(events), expiration: @expiration)
 
       _ ->
         :pass

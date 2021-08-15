@@ -11,7 +11,7 @@ import { ChartSandbox } from './chart.sandbox';
 })
 export class ChartComponent implements OnInit, OnDestroy{
   public chartConfig = ChartConfig;
-  public chartItems: [ChartItem, ChartItem];
+  public chartItems: ChartItem[];
   private chartItemsSubscription: Subscription;
 
   constructor(

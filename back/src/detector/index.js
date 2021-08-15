@@ -7,7 +7,8 @@ module.exports = function findOpportunities(exchanges, minProfit, investment) {
   }
 
   const opportunities = [];
-  for (const pair of makePairs(exchanges)) {
+  const pairs = makePairs(exchanges);
+  for (const pair of pairs) {
     const opportunity = calculator(pair[0], pair[1], minProfit, investment);
     if (opportunity != null) {
       opportunities.push(opportunity);

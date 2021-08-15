@@ -1,7 +1,10 @@
 const calculator = require('./calculator.js');
 const exchangeData = require("./exchange_data.js")
 
-module.exports = function findOpportunities(exchanges, minProfit, investment) {
+const DEBUG = false;
+
+module.exports = function findOpportunities(exchanges, minProfitability=0.0025, investment=100) {
+  if (DEBUG) console.time("opportunities");
   for (const exchange of exchanges) {
     exchange.data = exchangeData[exchange.exchange];
   }
@@ -9,12 +12,12 @@ module.exports = function findOpportunities(exchanges, minProfit, investment) {
   const opportunities = [];
   const pairs = makePairs(exchanges);
   for (const pair of pairs) {
-    const opportunity = calculator(pair[0], pair[1], minProfit, investment);
+    const opportunity = calculator(pair[0], pair[1], minProfitability, investment);
     if (opportunity != null) {
       opportunities.push(opportunity);
     }
   }
-
+  if (DEBUG) console.timeEnd("opportunities");
   return opportunities;
 }
 

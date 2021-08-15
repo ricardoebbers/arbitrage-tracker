@@ -7,3 +7,9 @@ config :amqp,
   channels: [
     mychan: [connection: :myconn]
   ]
+
+config :streamer,
+  exchanges: ["binance", "huobi"]
+
+config :publisher,
+  exchanges: ["binance", "huobi"]

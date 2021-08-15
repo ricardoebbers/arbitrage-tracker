@@ -6,7 +6,11 @@ defmodule Streamer.Coincap do
 
   @base_url "wss://ws.coincap.io/trades/"
   def start_link(exchange) do
-    WebSockex.start_link(@base_url <> exchange, __MODULE__, nil)
+    Logger.info("Streamer is connecting to websocket stream for #{exchange}...")
+
+    WebSockex.start_link(@base_url <> exchange, __MODULE__, nil,
+      name: :"#{__MODULE__}-#{exchange}"
+    )
   end
 
   def handle_frame({_type, msg}, state) do

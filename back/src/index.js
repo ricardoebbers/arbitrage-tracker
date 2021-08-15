@@ -1,13 +1,18 @@
 const WebSocketServer = require('ws').Server;
 const Rabbit = require('./rabbit');
 const OpportunityDetector = require("./detector");
+require('dotenv').config();
+
+const WS_PORT = process.env.WS_PORT;
+const WS_PATH = process.env.WS_PATH;
+
 
 const listeners = []
 async function startServer() {
   const rabbit = await (new Rabbit()).initialize();
-  wss = new WebSocketServer({port: 9191, path: '/'});
+  wss = new WebSocketServer({ port: WS_PORT, path: WS_PATH });
 
-  wss.on('connection', async function(ws) {
+  wss.on('connection', async function (ws) {
     const history = await rabbit.getAllAvailableMessages();
     console.log(`New connection, sending all ${history.length} messages`);
     for (let oldMessage of history) {
@@ -15,7 +20,7 @@ async function startServer() {
     }
     listeners.push(ws);
 
-    ws.on("close", () => { 
+    ws.on("close", () => {
       listeners.splice(listeners.indexOf(ws), 1);
     })
   });

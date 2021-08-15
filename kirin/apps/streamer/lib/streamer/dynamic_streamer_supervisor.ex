@@ -8,7 +8,11 @@ defmodule Streamer.DynamicStreamerSupervisor do
   end
 
   def init(_init_arg) do
-    DynamicSupervisor.init(strategy: :one_for_one)
+    DynamicSupervisor.init(
+      strategy: :one_for_one,
+      max_restarts: 100_000,
+      max_seconds: 100_000
+    )
   end
 
   def autostart_streaming do

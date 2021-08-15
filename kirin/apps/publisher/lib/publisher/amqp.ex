@@ -14,8 +14,8 @@ defmodule Publisher.AMQP do
         AMQP.Queue.declare(chan, queue, durable: true)
         AMQP.Basic.publish(chan, "", queue, Jason.encode!(payload), expiration: expiration_time)
 
-      _ ->
-        Logger.warn("Failed to publish payload to queue '#{queue}': #{inspect(payload)}")
+      error ->
+        Logger.error("Failed to publish payload to queue '#{queue}': #{inspect(error)}")
         :pass
     end
   end

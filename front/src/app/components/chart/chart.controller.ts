@@ -14,7 +14,6 @@ export class ChartController {
   }
 
   public newExchanges(exchanges: IExchange[]): void {
-    console.log(exchanges)
     for (const exchange of exchanges) {
       const chartItemIndex = this.chartItems.findIndex(item => item.name === exchange.exchange);
       if (chartItemIndex !== -1) {

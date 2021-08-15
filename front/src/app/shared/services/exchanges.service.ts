@@ -14,11 +14,12 @@ export class ExchangesService {
 
     wsService.getWebSocketObservable().subscribe(
       obj => {
-          this.getExchangeData(obj)
+        this.getExchangeData(obj)
       },
       err => {
         console.log('ERROR: ', err)
-      })
+      }
+    )
   }
   private getExchangeData(obj: any): void {
     const timestamp = obj.timestamp

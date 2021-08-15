@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IOportunity } from 'src/app/shared/interfaces/oportunity';
-import { ExchangesService } from 'src/app/shared/services/exchanges.service';
-import { OportunitiesService } from 'src/app/shared/services/oportunities.service';
+import { OpportunitiesService } from 'src/app/shared/services/opportunities.service';
 import { ChartController } from '../chart/chart.controller';
 import { CardController } from './card.controller';
 
@@ -10,17 +9,17 @@ import { CardController } from './card.controller';
 export class CardSandbox {
 
   constructor(
-    private oportunitiesService: OportunitiesService,
+    private OpportunitiesService: OpportunitiesService,
     private chartController: ChartController,
     private cardController: CardController
   ) {}
 
-  public setupOportunities(): void {
+  public setupOpportunities(): void {
     this.chartController.subscribeExchangeTopicList().subscribe( newExchangeTopic => {
         this.cardController.newExchangeTopic(newExchangeTopic)
       });
-    this.oportunitiesService.subscribeNewOportunities().subscribe( oportunities => {
-      this.cardController.saveNewOportunities(oportunities)
+    this.OpportunitiesService.subscribeNewOpportunities().subscribe( opportunities => {
+      this.cardController.saveNewOpportunities(opportunities)
     });
   }
 

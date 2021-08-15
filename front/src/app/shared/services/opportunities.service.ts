@@ -8,13 +8,13 @@ import { filter } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class OportunitiesService {
+export class OpportunitiesService {
 
   private readonly newOportunitySubject: Subject<IOportunity[]> = new Subject<IOportunity[]>();
 
   constructor(wsService: WebsocketsService) {
 
-    wsService.getWebSocketObservable().pipe(filter(obj => 'oportunities' in obj)).subscribe(
+    wsService.getWebSocketObservable().pipe(filter(obj => 'opportunities' in obj)).subscribe(
       obj => {
           this.getOportunityData(obj)
       },
@@ -24,20 +24,21 @@ export class OportunitiesService {
     )
   }
   private getOportunityData(obj: any): void {
-    const oportunitiesList = []
-    for (const oportunity of obj.oportunities) {
+    const OpportunitiesList = []
+    console.log(obj.opportunities)
+    for (const oportunity of obj.opportunities) {
       const newOportunity: IOportunity = {
         buyAt: oportunity.buyAt,
         sellAt: oportunity.sellAt,
         profit: oportunity.profit,
         investment: oportunity.investment,
       }
-      oportunitiesList.push(newOportunity)
+      OpportunitiesList.push(newOportunity)
     }
-    this.newOportunitySubject.next(oportunitiesList)
+    this.newOportunitySubject.next(OpportunitiesList)
   }
 
-  public subscribeNewOportunities(): Observable<IOportunity[]> {
+  public subscribeNewOpportunities(): Observable<IOportunity[]> {
     return this.newOportunitySubject.asObservable()
   }
 }

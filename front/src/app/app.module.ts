@@ -12,6 +12,9 @@ import { ExchangesService } from './shared/services/exchanges.service';
 import { ChartSandbox } from './components/chart/chart.sandbox';
 import { ChartController } from './components/chart/chart.controller';
 import { CardComponent  } from './components/card/card.component';
+import { OpportunitiesService } from './shared/services/opportunities.service';
+import { CardSandbox } from './components/card/card.sandbox';
+import { CardController } from './components/card/card.controller';
 
 @NgModule({
   declarations: [
@@ -30,7 +33,10 @@ import { CardComponent  } from './components/card/card.component';
   providers: [
     ExchangesService,
     ChartSandbox,
-    ChartController
+    ChartController,
+    OpportunitiesService,
+    CardSandbox,
+    CardController
   ],
   bootstrap: [AppComponent]
 })

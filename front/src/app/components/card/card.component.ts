@@ -20,7 +20,7 @@ export class CardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.cardSandbox.setupOportunities();
+    this.cardSandbox.setupOpportunities();
 
     this.exchangeListSubscription = this.cardSandbox.getExchangesTopicList().subscribe(exchangeList => {
       this.exchangeList = exchangeList;

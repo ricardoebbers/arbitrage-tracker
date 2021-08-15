@@ -12,7 +12,6 @@ export class WebsocketsService {
   private subject: WebSocketSubject<Object>;
 
   constructor() {
-    console.log(environment)
     this.subject = webSocket(environment.websocket_url)
   }
 

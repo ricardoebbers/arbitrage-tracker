@@ -23,7 +23,7 @@ services:
     links: 
       - rabbitmq
     ports:
-      - 9091:9091
+      - 9191:9191
     networks:
       - arbitrage
   kirin:

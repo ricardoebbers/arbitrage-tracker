@@ -43,6 +43,7 @@ services:
     env_file:
       - .env
     volumes:
+      - /app/deps
       - ./kirin:/app
   rabbitmq:
     image: rabbitmq:3-management-alpine

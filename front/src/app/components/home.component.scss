@@ -1,25 +1,24 @@
-// @import '../../assets/styles/utils/functions.scss';
-
 :host {
   display: flex;
-  flex: 1;
-  
+  flex: 1; 
 }
+.home {
+  height:100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
 
-// .home {
-//   height:100%;
-//   width: 100%;
-//   margin: get-vw(46px) get-vw(95px) 0 get-vw(91px);
-//   padding-bottom: get-vw(127px);
-//   border-bottom: 1px solid #c8d6dd;
+  .cards-container {
+    display: flex;
+    flex-direction: row;
+    width: 1000px;
+    justify-content: space-between;
+    margin-bottom: 100px;
+    
+  }
+  // .chart-container {
 
-//   .list-manager {
-//     margin-bottom: get-vw(63px);
-//   }
-
-//   .fab-button {
-//     position: fixed;
-//     right: get-vw(47px);
-//     bottom: get-vw(23px);
-//   }
-// }
+  // }
+}

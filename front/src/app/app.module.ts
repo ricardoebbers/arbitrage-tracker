@@ -11,12 +11,14 @@ import { ChartComponent } from './components/chart/chart.component';
 import { ExchangesService } from './shared/services/exchanges.service';
 import { ChartSandbox } from './components/chart/chart.sandbox';
 import { ChartController } from './components/chart/chart.controller';
+import { CardComponent  } from './components/card/card.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    ChartComponent
+    ChartComponent,
+    CardComponent
   ],
   imports: [
     BrowserModule,

@@ -1,12 +1,29 @@
+const WebSocketServer = require('ws').Server;
 const Rabbit = require('./rabbit');
 
-async function subscribe() {
-  const rabbit = await Rabbit()
-  console.log(await rabbit.getAllAvailableMessages())
+const listeners = []
+async function startServer() {
+  const rabbit = await (new Rabbit()).initialize();
+  wss = new WebSocketServer({port: 9191, path: '/'});
+
+  wss.on('connection', async function(ws) {
+    const history = await rabbit.getAllAvailableMessages()
+    console.log(`New consumer, sending all ${history ? history.length : null} messages`)
+    await ws.send(history);
+    listeners.push(ws);
+
+    ws.on("close", () => { 
+      listeners.splice(listeners.indexOf(ws), 1);
+    })
+  });
+
   rabbit.subscribe((msg) => {
-    console.log('Message:', msg.content.toString())
+    if (!msg) return;
+    const message = msg.content.toString()
+    console.log(`New message: ${message}`);
+    listeners.forEach(ws => ws.send(message));
   })
 }
 
-
-subscribe()
+startServer()
+console.log('Server started')

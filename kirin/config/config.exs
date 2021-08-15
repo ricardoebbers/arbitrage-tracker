@@ -6,7 +6,9 @@ config :amqp,
   ],
   channels: [
     mychan: [connection: :myconn]
-  ]
+  ],
+  expiration_time: 60_000,
+  queue_name: "arbitrage"
 
 config :streamer,
   exchanges: ["binance", "huobi"]

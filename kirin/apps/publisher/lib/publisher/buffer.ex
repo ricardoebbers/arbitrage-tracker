@@ -34,11 +34,15 @@ defmodule Publisher.Buffer do
   def handle_info(:tick, state) do
     Process.send_after(self(), :tick, @one_second)
 
+    Task.start_link(fn -> publish(state) end)
+
+    {:noreply, update_state(state)}
+  end
+
+  defp publish(state) do
     state
     |> build_payload()
     |> Publisher.AMQP.publish()
-
-    {:noreply, update_state(state)}
   end
 
   defp build_payload(state) do

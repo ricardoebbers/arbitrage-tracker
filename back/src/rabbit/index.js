@@ -14,15 +14,15 @@ module.exports = class RabbitBroker {
   }
 
   async subscribe(callback) {
-    await this.channel.consume(QUEUE_NAME, callback, { noAck: true })
+    return await this.channel.consume(QUEUE_NAME, callback)
   }
 
   async getAllAvailableMessages() {
     const messages = []
-    let message = await this.channel.get(QUEUE_NAME, { noAck: true })
+    let message = await this.channel.get(QUEUE_NAME)
     while (message) {
       messages.push(message.content.toString())
-      message = await this.channel.get(QUEUE_NAME, { noAck: true })
+      message = await this.channel.get(QUEUE_NAME)
     }
     return messages
   }

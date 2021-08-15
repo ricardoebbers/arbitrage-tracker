@@ -1,16 +1,14 @@
 const DEBUG = false;
 
-module.exports = function calculateExpectedProfit(exchangeA, exchangeB, minProfitability, investment) {
+module.exports = function calculateExpectedProfit(exchangeA, exchangeB, investment) {
   const profitA = profitOnBuyFromX(exchangeA, exchangeB, investment);
   const profitB = profitOnBuyFromX(exchangeB, exchangeA, investment);
   if (DEBUG) console.table({ [exchangeA.exchange]: profitA, [exchangeB.exchange]: profitB });
-  return profitA > profitB 
-  ? makeResultObject(profitA, exchangeA.exchange, exchangeB.exchange, minProfitability, investment) 
-  : makeResultObject(profitB, exchangeB.exchange, exchangeA.exchange, minProfitability, investment)
+  return makeResult(profitA, profitB, exchangeA.exchange, exchangeB.exchange, investment);
+
 }
   
 function profitOnBuyFromX(exchangeX, exchangeY, investment) {
-  if (exchangeX.price > exchangeY.price) return -1;
   const { buyTax, buyCost } = exchangeX.data;
   const { sellTax, sellCost } = exchangeY.data;
 
@@ -20,15 +18,17 @@ function profitOnBuyFromX(exchangeX, exchangeY, investment) {
   return taxedSale - investment;
 }
 
-function makeResultObject(profit, buyAt, sellAt, minProfitability, investment) {
-  if (profit < 0) return null;
-  if (profit > (investment * minProfitability)) {
+function makeResult(profitA, profitB, exchangeA, exchangeB, investment) {
+  const resultA = makeResultObject(profitA, exchangeA, exchangeB, investment);
+  const resultB = makeResultObject(profitB, exchangeB, exchangeA, investment);
+  return [ resultA, resultB ]
+}
+
+function makeResultObject(profit, buyAt, sellAt, investment) {  
     return {
       buyAt,
       sellAt,
       profit,
-      profitability: (profit / investment) * 100,
       investment,
     };
-  }
 }

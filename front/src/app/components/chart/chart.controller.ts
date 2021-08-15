@@ -7,6 +7,7 @@ import { ChartItem } from 'src/app/shared/models/chartItem.model';
 export class ChartController {
   private chartItems: ChartItem[] = []
   private readonly chartListSubject: Subject<ChartItem[]> = new Subject<ChartItem[]>();
+  private readonly newExchangeTopicSubject: Subject<string> = new Subject<string>();
 
   constructor(
   ) {
@@ -22,6 +23,7 @@ export class ChartController {
         const newChartItem = new ChartItem(exchange.exchange)
         newChartItem.addExchange(exchange)
         this.chartItems.push(newChartItem)
+        this.newExchangeTopicSubject.next(exchange.exchange)
       }
     }
     this.chartListSubject.next([...this.chartItems])
@@ -29,6 +31,10 @@ export class ChartController {
 
   public subscribeChartItemList(): Observable<ChartItem[]> {
     return this.chartListSubject.asObservable();
+  }
+
+  public subscribeExchangeTopicList(): Observable<string> {
+    return this.newExchangeTopicSubject.asObservable();
   }
 
 }

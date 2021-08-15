@@ -1,21 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Observable, Observer, Subject } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
 import { IExchange } from '../interfaces/exchange'; 
 import { WebsocketsService } from './websocket.service';
 
-export interface Message {
-  author: string;
-  message: string;
-}
 @Injectable({
   providedIn: 'root'
 })
 export class ExchangesService {
 
   private readonly newExchangesSubject: Subject<IExchange[]> = new Subject<IExchange[]>();
-
-  public messages: Subject<Message>;
 
   constructor(wsService: WebsocketsService) {
 

@@ -1,16 +1,34 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Observer, Subject } from 'rxjs';
+import { map, filter } from 'rxjs/operators';
 import { IExchange } from '../interfaces/exchange'; 
+import { WebsocketsService } from './websocket.service';
 
+export interface Message {
+  author: string;
+  message: string;
+}
 @Injectable({
   providedIn: 'root'
 })
 export class ExchangesService {
 
   private readonly newExchangesSubject: Subject<[IExchange, IExchange]> = new Subject<[IExchange, IExchange]>();
+  private subject: Subject<MessageEvent>;
 
-  constructor() {
+  public messages: Subject<Message>;
+
+  constructor(wsService: WebsocketsService) {
+
+    wsService.getWebSocketObservable().subscribe(
+      obj => {
+        console.log(obj)
+      },
+      err => {
+        console.log('ERROR: ', err)
+      })
     this.startGettingExchangeData();
+    this.test()
   }
 
   private startGettingExchangeData(): void {
@@ -39,5 +57,27 @@ export class ExchangesService {
 
   public subscribeNewExchanges(): Observable<[IExchange, IExchange]> {
     return this.newExchangesSubject.asObservable()
+  }
+
+  private test() {
+    const obs = new Observable((observer) => {
+      observer.next(1)
+      observer.next(2)
+      observer.next(3)
+      observer.next(4)
+      observer.next(5)
+      observer.complete()
+    }).pipe(
+      filter(data => typeof data === 'number' && data > 2),            //filter Operator
+      map((val) => {return val as number * 2}),    //map operator
+    )
+
+    obs.subscribe(val => {
+      console.log(val)
+    })
+
+    // 6
+    // 8
+    // 10
   }
 }

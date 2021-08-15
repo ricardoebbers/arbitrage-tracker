@@ -9,7 +9,7 @@ async function startServer() {
   wss.on('connection', async function(ws) {
     const history = await rabbit.getAllAvailableMessages()
     console.log(`New consumer, sending all ${history ? history.length : null} messages`)
-    await ws.send(history);
+    await ws.send(JSON.stringify(history));
     listeners.push(ws);
 
     ws.on("close", () => { 

@@ -12,8 +12,9 @@ services:
       - back
     networks:
       - arbitrage
-    env_file:
-      - .env
+    volumes:
+      - /app/node_modules
+      - ./front:/app
   back:
     container_name: back
     build: back/.

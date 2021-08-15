@@ -4,7 +4,7 @@ services:
     container_name: front
     build: front/.
     ports:
-      - 4200:4200
+      - 4200:80
     restart: on-failure
     depends_on:
       - back

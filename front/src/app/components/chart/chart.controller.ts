@@ -5,32 +5,29 @@ import { ChartItem } from 'src/app/shared/models/chartItem.model';
 
 @Injectable()
 export class ChartController {
-  private chartItemA: ChartItem;
-  private chartItemB: ChartItem;
-  private readonly chartListSubject: Subject<[ChartItem, ChartItem]> = new Subject<[ChartItem, ChartItem]>();
+  private chartItems: ChartItem[] = []
+  private readonly chartListSubject: Subject<ChartItem[]> = new Subject<ChartItem[]>();
 
   constructor(
   ) {
   }
 
-  public newExchanges(exchanges: [IExchange, IExchange]): void {
-    if (!this.chartItemA) {
-      this.chartItemA = new ChartItem(exchanges[0].exchange)
+  public newExchanges(exchanges: IExchange[]): void {
+    console.log(exchanges)
+    for (const exchange of exchanges) {
+      const chartItemIndex = this.chartItems.findIndex(item => item.name === exchange.exchange);
+      if (chartItemIndex !== -1) {
+        this.chartItems[chartItemIndex].addExchange(exchange)
+      } else {
+        const newChartItem = new ChartItem(exchange.exchange)
+        newChartItem.addExchange(exchange)
+        this.chartItems.push(newChartItem)
+      }
     }
-    if (!this.chartItemB) {
-      this.chartItemB = new ChartItem(exchanges[1].exchange)
-    }
-    this.chartItemA.name === exchanges[0].exchange ? this.addExchanges(exchanges[0], exchanges[1]) : this.addExchanges(exchanges[1], exchanges[0])
-
-    this.chartListSubject.next([this.chartItemA, this.chartItemB])
+    this.chartListSubject.next([...this.chartItems])
   }
 
-  public addExchanges(exchangeA: IExchange, exchangeB: IExchange): void {
-    this.chartItemA.addExchange(exchangeA);
-    this.chartItemB.addExchange(exchangeB);
-  }
-
-  public subscribeChartItemList(): Observable<[ChartItem, ChartItem]> {
+  public subscribeChartItemList(): Observable<ChartItem[]> {
     return this.chartListSubject.asObservable();
   }
 

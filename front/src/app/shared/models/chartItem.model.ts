@@ -14,7 +14,7 @@ export class ChartItem  {
   }
 
   public addExchange(exchange: IExchange): void {
-    const date = new Date(exchange.timestamp);
+    const date = new Date(exchange.timestamp * 1000);
     const time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
     const seriesValue = exchange.price;
     const series = {

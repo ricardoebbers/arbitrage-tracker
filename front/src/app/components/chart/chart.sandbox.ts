@@ -19,7 +19,7 @@ export class ChartSandbox {
     });
   }
 
-  public getChartList(): Observable<[ChartItem, ChartItem]>  {
+  public getChartList(): Observable<ChartItem[]>  {
     return this.chartController.subscribeChartItemList();
   }
 }

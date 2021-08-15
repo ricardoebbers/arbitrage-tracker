@@ -13,8 +13,7 @@ export interface Message {
 })
 export class ExchangesService {
 
-  private readonly newExchangesSubject: Subject<[IExchange, IExchange]> = new Subject<[IExchange, IExchange]>();
-  private subject: Subject<MessageEvent>;
+  private readonly newExchangesSubject: Subject<IExchange[]> = new Subject<IExchange[]>();
 
   public messages: Subject<Message>;
 
@@ -22,62 +21,30 @@ export class ExchangesService {
 
     wsService.getWebSocketObservable().subscribe(
       obj => {
-        console.log(obj)
+          this.getExchangeData(obj)
       },
       err => {
         console.log('ERROR: ', err)
       })
-    this.startGettingExchangeData();
-    this.test()
   }
-
-  private startGettingExchangeData(): void {
-    const generateExchanges = () => {
-      const timestamp = new Date().getTime();
-      const exchangeBinance: IExchange = {
-          exchange: "binance",
-          pair: "btc/usd",
-          price: Math.floor(Math.random() * 10) + 1,
-          volume: Math.floor(Math.random() * 1000) + 1,
-          timestamp: timestamp,
-          priceUsd: Math.floor(Math.random() / 1000),
+  private getExchangeData(obj: any): void {
+    const timestamp = obj.timestamp
+    const exchangesList = []
+    for (const exchange of obj.events) {
+      const newExchange: IExchange = {
+        exchange: exchange.exchange,
+        pair: exchange.pair,
+        price: exchange.price,
+        volume: exchange.volume,
+        timestamp,
+        priceUsd: exchange.priceUsd,
       }
-      const exchangeHuobi: IExchange = {
-        exchange: "huobi",
-        pair: "btc/usd",
-        price: Math.floor(Math.random() * 10) + 1,
-        volume: Math.floor(Math.random() * 1000) + 1,
-        timestamp: timestamp,
-        priceUsd: Math.floor(Math.random() / 1000),
-      }
-      this.newExchangesSubject.next([exchangeBinance, exchangeHuobi])
+      exchangesList.push(newExchange)
     }
-    setInterval(generateExchanges, 2000)
+    this.newExchangesSubject.next(exchangesList)
   }
 
-  public subscribeNewExchanges(): Observable<[IExchange, IExchange]> {
+  public subscribeNewExchanges(): Observable<IExchange[]> {
     return this.newExchangesSubject.asObservable()
-  }
-
-  private test() {
-    const obs = new Observable((observer) => {
-      observer.next(1)
-      observer.next(2)
-      observer.next(3)
-      observer.next(4)
-      observer.next(5)
-      observer.complete()
-    }).pipe(
-      filter(data => typeof data === 'number' && data > 2),            //filter Operator
-      map((val) => {return val as number * 2}),    //map operator
-    )
-
-    obs.subscribe(val => {
-      console.log(val)
-    })
-
-    // 6
-    // 8
-    // 10
   }
 }

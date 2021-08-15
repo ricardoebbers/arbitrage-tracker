@@ -17,12 +17,13 @@ async function startServer() {
   const rabbit = await (new Rabbit()).initialize();
 
   wss.on('connection', async function(ws) {
-    onNewConnection(ws, rabbit);
+    process.stdout.write("*")
+    listeners.push(ws);
+
     if (!rabbitSubscribed) {   
       rabbitSubscribed = true;
       rabbit.subscribe((msg) => {
         onEvent(msg);
-        return false;
       })
     }
 
@@ -41,23 +42,11 @@ async function onEvent(msg) {
     if (!message.events) return process.stdout.write("?");
     if (DEBUG) console.log(message.events);
     message.opportunities = OpportunityDetector(message.events)
-    if (message.opportunities.length) process.stdout.write("$");
     listeners.forEach(ws => ws.send(JSON.stringify(message)))
   } catch (e) {
     console.log(e)
     process.stdout.write("!")
   }
-}
-
-async function onNewConnection(ws, rabbit) {
-  // TODO: Not working because messages are getting deleted on ACK
-  // const history = await rabbit.getAllAvailableMessages();
-  // process.stdout.write(history ? history.length.toString() : "-1")
-  // for (let oldMessage of history) {
-  //   await ws.send(JSON.stringify(oldMessage));
-  // }
-  process.stdout.write("*")
-  listeners.push(ws);
 }
 
 startServer()

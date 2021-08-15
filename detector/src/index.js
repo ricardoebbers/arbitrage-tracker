@@ -1,42 +1,30 @@
-const exchange = require("./exchange");
-const exchangeData = require("./exchange")
+const calculator = require('./calculator.js');
+const exchangeData = require("./exchange_data.js")
 
-module.exports = function calculateExpectedProfit(exchangeA, exchangeB, minProfit=0.10, investment=100) {
-  const dataA = exchangeData[exchangeA.exchange];
-  const dataB = exchangeData[exchangeB.exchange];
-  if (!dataA || !dataB) {
-    console.log("Missing data for " + exchangeA.exchange + " or " + exchangeB.exchange);
-    return null;
+module.exports = function findOpportunities(exchanges, minProfit, investment) {
+  for (const exchange of exchanges) {
+    exchange.data = exchangeData[exchange.exchange];
   }
 
-  exchangeA.data = dataA
-  exchangeB.data = dataB
-  const profitA = profitOnBuyFromX(exchangeA, exchangeB, investment);
-  const profitB = profitOnBuyFromX(exchangeB, exchangeA, investment);
-
-  return profitA > profitB 
-  ? makeResultObject(profitA, exchangeA.exchange, exchangeB.exchange, minProfit, investment) 
-  : makeResultObject(profitB, exchangeB.exchange, exchangeA.exchange, minProfit, investment)
-}
-  
-function profitOnBuyFromX(exchangeX, exchangeY, investment) {
-  const priceX = exchangeX.priceUsd * investment;
-  const priceY = exchangeY.priceUsd * investment;
-  const { buyTax, buyCost } = exchangeX.data;
-  const { sellTax, sellCost } = exchangeY.dataY;
-
-  const profit = ((priceX - buyCost) * (1 - buyTax)) - ((priceY - sellCost) * (1 - sellTax));
-  return profit;
-}
-
-function makeResultObject(profit, buyAt, sellAt, minProfit, investment) {
-  if (profit > (investment * minProfit)) {
-    return {
-      buyAt,
-      sellAt,
-      profit,
-      profitability: (profit / investment) * 100,
-      investment,
-    };
+  const opportunities = [];
+  for (const pair of makePairs(exchanges)) {
+    const opportunity = calculator(pair[0], pair[1], minProfit, investment);
+    if (opportunity != null) {
+      opportunities.push(opportunity);
+    }
   }
+
+  return opportunities;
+}
+
+function makePairs(exchanges) {
+  const pairs = [];
+  for (let i = 0; i < exchanges.length; i++) {
+    if (exchanges[i].data == null) continue;
+    for (let j = i + 1; j < exchanges.length; j++) {
+      if (exchanges[j].data == null) continue;
+      pairs.push([exchanges[i], exchanges[j]]);
+    }
+  }
+  return pairs;
 }

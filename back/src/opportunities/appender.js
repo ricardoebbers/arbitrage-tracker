@@ -6,19 +6,19 @@ const pastOpportunities = {}
 module.exports = function findOpportunities(message) {
   if (DEBUG_TIMES) console.time("appender");
   for (opportunity of message.opportunities) {
-    appendPastData(opportunity);
+    appendPastData(opportunity, message.timestamp);
     // Add more data as needed
   }
   if (DEBUG_TIMES) console.timeEnd("appender");
   return message
 }
 
-function appendPastData(current) {
+function appendPastData(current, timestamp) {
   const past = getOrSavePastOpportunity(opportunity);
   current.positive = isProfitable(current);
   if (current.positive) {
     past.duration += opportunity.duration;
-    if (!past.since) past.since = message.timestamp;
+    if (!past.since) past.since = timestamp;
   } else {
     past.duration = 0;
     past.since = null

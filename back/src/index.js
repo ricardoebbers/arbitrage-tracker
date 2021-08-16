@@ -31,8 +31,7 @@ rxAmqp.newConnection(RABBITMQ_URL)
   .map(OpportunityDetector)
   .map(OpportunityAppender)
   .map(msg => JSON.stringify(msg))
-  .doOnNext(msg => listeners.forEach(ws => ws.send(msg)))
-  .subscribe();
+  .subscribe(sendToListeners, console.error, console.log)
 
 function parseToJSON(message) {
   try {
@@ -40,4 +39,8 @@ function parseToJSON(message) {
   } catch (e) {
     return null;
   }
+}
+
+function sendToListeners(msg) {
+  listeners.forEach(ws => ws.send(msg))
 }

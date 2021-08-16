@@ -29,7 +29,7 @@ function appendPastData(current, timestamp) {
 }
 
 function getOrSavePastOpportunity(opportunity) {
-  const key = [opportunity.buyAt, opportunity.sellAt]
+  const key = `${opportunity.buyAt}-${opportunity.sellAt}`;
   if (pastOpportunities[key]) return pastOpportunities[key];
   pastOpportunities[key] = { since: null, duration: 0 }
   return pastOpportunities[key];

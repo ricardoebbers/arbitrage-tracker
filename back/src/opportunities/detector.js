@@ -3,23 +3,24 @@ const exchangeData = require("./exchange_data.js")
 
 const DEBUG = false;
 
-module.exports = function findOpportunities(exchanges, investment=100) {
+module.exports = function findOpportunities(message) {
   if (DEBUG) console.time("opportunities");
-  for (const exchange of exchanges) {
+  for (const exchange of message.events) {
     exchange.data = exchangeData[exchange.exchange];
   }
 
   const opportunities = [];
-  const pairs = makePairs(exchanges);
+  const pairs = makePairs(message.events);
   for (const pair of pairs) {
-    const opportunity = calculator(pair[0], pair[1], investment);
+    const opportunity = calculator(pair[0], pair[1]);
     if (opportunity != null && opportunity.length) {
       opportunities.push(opportunity[0]);
       opportunities.push(opportunity[1]);
     }
   }
   if (DEBUG) console.timeEnd("opportunities");
-  return opportunities;
+  message.opportunities = opportunities;
+  return message;
 }
 
 function makePairs(exchanges) {

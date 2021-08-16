@@ -1,64 +1,46 @@
 const WebSocketServer = require('ws').Server;
-const Rabbit = require('./rabbit');
-const OpportunityDetector = require("./detector");
+const rxAmqp = require('rx-amqplib');
+const OpportunityDetector = require("./opportunities/detector");
+const OpportunityAppender = require("./opportunities/appender");
 require('dotenv').config();
 
 const WS_PORT = process.env.WS_PORT;
 const WS_PATH = process.env.WS_PATH;
-
-
-const DEBUG = false;
+const QUEUE_NAME = process.env.QUEUE_NAME;
+const RABBITMQ_URL = process.env.RABBITMQ_URL;
 
 const listeners = []
-let rabbitSubscribed = false;
 
-async function startServer() {
-  wss = new WebSocketServer({ port: WS_PORT, path: WS_PATH });
-  const rabbit = await (new Rabbit()).initialize();
+console.log("Starting WS server...")
+wss = new WebSocketServer({ port: WS_PORT, path: WS_PATH });
+wss.on('connection', async function(ws) {
+  listeners.push(ws);
+  ws.on("close", () => {
+    listeners.splice(listeners.indexOf(ws), 1);
+  })
+});
 
-  wss.on('connection', async function(ws) {
-    onNewConnection(ws, rabbit);
-    if (!rabbitSubscribed) {   
-      rabbitSubscribed = true;
-      rabbit.subscribe((msg) => {
-        onEvent(msg);
-        return false;
-      })
-    }
+console.log("Connecting to Rabbit...")
+rxAmqp.newConnection(RABBITMQ_URL)
+  .flatMap(connection => connection.createChannel())
+  .flatMap(channel => channel.assertQueue(QUEUE_NAME, { durable: true }))
+  .flatMap(reply => reply.channel.consume(QUEUE_NAME, { noAck: true }))
+  .filter(msg => msg && msg.content)
+  .map(parseToJSON)
+  .filter(msg => msg && msg.events)
+  .map(OpportunityDetector)
+  .map(OpportunityAppender)
+  .map(msg => JSON.stringify(msg))
+  .subscribe(sendToListeners, console.error, console.log)
 
-    ws.on("close", () => {
-      process.stdout.write("x")
-      listeners.splice(listeners.indexOf(ws), 1);
-    })
-  });
-}
-
-async function onEvent(msg) {
-  process.stdout.write(".")
-  if (!msg) return;
+function parseToJSON(message) {
   try {
-    const message = JSON.parse(msg.content.toString())
-    if (!message.events) return process.stdout.write("?");
-    if (DEBUG) console.log(message.events);
-    message.opportunities = OpportunityDetector(message.events)
-    if (message.opportunities.length) process.stdout.write("$");
-    listeners.forEach(ws => ws.send(JSON.stringify(message)))
+    return JSON.parse(message.content.toString());
   } catch (e) {
-    console.log(e)
-    process.stdout.write("!")
+    return null;
   }
 }
 
-async function onNewConnection(ws, rabbit) {
-  // TODO: Not working because messages are getting deleted on ACK
-  // const history = await rabbit.getAllAvailableMessages();
-  // process.stdout.write(history ? history.length.toString() : "-1")
-  // for (let oldMessage of history) {
-  //   await ws.send(JSON.stringify(oldMessage));
-  // }
-  process.stdout.write("*")
-  listeners.push(ws);
+function sendToListeners(msg) {
+  listeners.forEach(ws => ws.send(msg))
 }
-
-startServer()
-console.log('Server started')

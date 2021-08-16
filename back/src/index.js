@@ -25,17 +25,26 @@ rxAmqp.newConnection(RABBITMQ_URL)
   .flatMap(channel => channel.assertQueue(QUEUE_NAME, { durable: true }))
   .flatMap(reply => reply.channel.prefetch(59))
   .flatMap(reply => reply.channel.consume(QUEUE_NAME, { noAck: true }))
-  .doOnNext(msg => onEvent(msg))
+  .filter(msg => msg && msg.content)
+  .map(parseToJSON)
+  .filter(msg => msg && msg.events)
+  .map(findOpportunities)
+  .doOnNext(sendMessageToListeners)
   .subscribe();
 
-async function onEvent(msg) {
-  if (!msg) return;
+function parseToJSON(message) {
   try {
-    const message = JSON.parse(msg.content.toString())
-    if (!message.events) return console.log("Invalid message: "  + message);
-    message.opportunities = OpportunityDetector(message.events)
-    listeners.forEach(ws => ws.send(JSON.stringify(message)))
+    return JSON.parse(message.content.toString());
   } catch (e) {
-    console.log(e)
+    return null;
   }
+}
+
+function findOpportunities(message) {
+  message.opportunities = OpportunityDetector(message.events)
+  return message;
+}
+
+function sendMessageToListeners(message) {
+  listeners.forEach(ws => ws.send(JSON.stringify(message)));
 }

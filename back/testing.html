@@ -10,12 +10,12 @@ connection.onclose = function(){
 connection.onmessage = function(e){
   var server_message = e.data;
   console.log(server_message);
-  document.getElementById("result").innerHTML += server_message + "<br>";
+  document.getElementById("result").innerHTML = JSON.stringify(JSON.parse(server_message), null, 2);
 }
 </script>
 <body>
   <form>
-    <div id="result"></result>
+    <pre id="result"></result>
   </form>
 </body>
 </html>

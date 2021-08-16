@@ -1,6 +1,7 @@
 const WebSocketServer = require('ws').Server;
 const rxAmqp = require('rx-amqplib');
-const OpportunityDetector = require("./detector");
+const OpportunityDetector = require("./opportunities/detector");
+const OpportunityAppender = require("./opportunities/appender");
 require('dotenv').config();
 
 const WS_PORT = process.env.WS_PORT;
@@ -23,13 +24,14 @@ console.log("Connecting to Rabbit...")
 rxAmqp.newConnection(RABBITMQ_URL)
   .flatMap(connection => connection.createChannel())
   .flatMap(channel => channel.assertQueue(QUEUE_NAME, { durable: true }))
-  .flatMap(reply => reply.channel.prefetch(59))
   .flatMap(reply => reply.channel.consume(QUEUE_NAME, { noAck: true }))
   .filter(msg => msg && msg.content)
   .map(parseToJSON)
   .filter(msg => msg && msg.events)
-  .map(findOpportunities)
-  .doOnNext(sendMessageToListeners)
+  .map(OpportunityDetector)
+  .map(OpportunityAppender)
+  .map(msg => JSON.stringify(msg))
+  .doOnNext(msg => listeners.forEach(ws => ws.send(msg)))
   .subscribe();
 
 function parseToJSON(message) {
@@ -38,13 +40,4 @@ function parseToJSON(message) {
   } catch (e) {
     return null;
   }
-}
-
-function findOpportunities(message) {
-  message.opportunities = OpportunityDetector(message.events)
-  return message;
-}
-
-function sendMessageToListeners(message) {
-  listeners.forEach(ws => ws.send(JSON.stringify(message)));
 }

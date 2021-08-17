@@ -17,7 +17,7 @@ function appendPastData(current, timestamp) {
   const past = getOrSavePastOpportunity(opportunity);
   current.positive = isProfitable(current);
   if (current.positive) {
-    past.duration += opportunity.duration;
+    past.duration += 1;
     if (!past.since) past.since = timestamp;
   } else {
     past.duration = 0;

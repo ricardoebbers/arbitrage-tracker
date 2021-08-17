@@ -1,5 +1,5 @@
 .list-container {
-    background-color:#e4ffe0;
+    background-color:rgb(24, 26, 32);
     border-radius: 12px;
     
     li {
@@ -9,16 +9,16 @@
         padding: 12px;
         border-radius: 12px;
     
-        color: black; 
+        color: rgb(228, 228, 228); 
         font-family: 'Orienta', sans-serif; 
         font-size: 20px; 
         font-weight: bold;
         padding-bottom: 8px; 
 
-        border-bottom: 3px solid rgb(255, 255, 255);
+        border-bottom: 3px solid #070708;
     
         .label {
-            color: black;
+            color: white;
             font-weight: normal;
         }
     }    

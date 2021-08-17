@@ -5,4 +5,5 @@ export interface IExchange {
     volume: number
     timestamp: number
     priceUsd: number
+    activity: string
 }

@@ -11,6 +11,7 @@ export class ListComponent {
     @Input() list: IList[] = [];
     @Input() labelA: string;
     @Input() labelB: string;
+    @Input() labelC: string;
 
     constructor(
     ) {}

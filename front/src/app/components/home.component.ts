@@ -20,7 +20,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.opportunitiesListSubscription = this.homeSandbox.getOpportunities().subscribe(opportunitiesList => {
-      this.opList = opportunitiesList.splice(0, 12);
+      this.opList = opportunitiesList.splice(0, 10);
     })
 
     this.exchangesSubscription = this.homeSandbox.getExchanges().subscribe(exchangesList => {

@@ -32,6 +32,7 @@ export class ExchangesService {
         volume: exchange.volume,
         timestamp,
         priceUsd: exchange.priceUsd,
+        activity: exchange.activity
       }
       exchangesList.push(newExchange)
     }

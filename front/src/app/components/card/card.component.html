@@ -2,32 +2,32 @@
     <div class="exchange1 card column">
         <ng-select [items]="exchangeList"
             class="custom"
-            placeholder="Exchange A" 
+            placeholder="Buy at Exchange A" 
             bindLabel="name" 
             bindValue="name" 
             (change)="selectCoinA($event)">
         </ng-select>
         <div class="value" *ngIf="exchangeA.value">
-            <p><i class="fa fa-usd"></i> {{ exchangeA.value}}</p>
+            <p>Buy for <i class="fa fa-usd"></i>{{ exchangeA.value}}</p>
         </div>
     </div>
     <div class="exchange2 card column">
         <ng-select [items]="exchangeList" 
             class="custom"
-            placeholder="Exchange B" 
+            placeholder="Sell at Exchange B" 
             bindLabel="name" 
             bindValue="name" 
             (change)="selectCoinB($event)">
         </ng-select>
         <div class="value" *ngIf="exchangeB.value">
-            <p><i class="fa fa-usd"></i> {{ exchangeB.value }}</p>
+            <p>Sell for <i class="fa fa-usd"></i>{{ exchangeB.value }}</p>
         </div>
     </div>
     <div class="oportunity card">
         <div *ngIf="oportunity" class="oportunity-info">
-            <p>Opportunity duration: {{ oportunity.duration}} seconds</p>
-            <p>Investment: ${{ oportunity.investment}}</p>
-            <p>Profit: ${{ oportunity.profit}}</p>
+            <p>Positive for {{ oportunity.duration }} seconds</p>
+            <p>With an investment of ${{ oportunity.investment}}</p>
+            <p>You would profit ${{ oportunity.profit}}</p>
         </div>
     </div>
 </div>

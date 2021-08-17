@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { IOportunity } from 'src/app/shared/interfaces/oportunity';
 import { OpportunitiesService } from 'src/app/shared/services/opportunities.service';
 import { ChartController } from '../chart/chart.controller';
@@ -21,6 +21,7 @@ export class CardSandbox {
     this.OpportunitiesService.subscribeNewOpportunities().subscribe( opportunities => {
       this.cardController.saveNewOpportunities(opportunities)
     });
+    this.cardController.updateExchangeData(this.chartController.subscribeChartItemList())
   }
 
   public updateExchanges(exchangeA: string, exchangeB: string): void {
@@ -33,5 +34,13 @@ export class CardSandbox {
 
   public getExchangesTopicList(): Observable<string[]> {
     return this.cardController.subscribeExchangesTopicList();
+  }
+
+  public getExchangeValuesList(): Observable<{name: string, price: number}[]> {
+    return this.cardController.subscribeExchangeValues();
+  }
+
+  public updateCoins(exchangeA: string, exchangeB: string) {
+    return this.cardController.updateExchanges(exchangeA, exchangeB);
   }
 }

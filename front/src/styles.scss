@@ -1,6 +1,23 @@
+@import "~@ng-select/ng-select/themes/default.theme.css";
 body {
     font-family: Lato;
     color: #212121;
     background-color: #f5f5f5;
     margin:20px
   }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+h1 { color: red; font-family: 'Righteous', cursive; font-size: 65px; font-weight: normal; line-height: 60px; margin: 10px 0 20px; text-transform: uppercase; text-shadow: 2px 2px 0 #000; margin: 10px 0 24px; text-align: center; }
+
+
+h2 { font-size: 30px; letter-spacing: -1px; color: #DFBF84; text-transform: uppercase; text-shadow: 1px 1px 0 #000; margin: 10px 0 24px; text-align: center; line-height: 50px; }
+
+
+p { color: #f6f6f6; font-family: 'Orienta', sans-serif; font-size: 16px; line-height: 24px; margin: 0 0 24px; text-align: center; }
+
+
+a { color: #e8d4a7; text-decoration: none; text-align: right; padding: 15px; font-size: 20px; }
+
+
+a:hover { color: #da9650; text-decoration: blink; }

@@ -15,20 +15,25 @@ import { CardComponent  } from './components/card/card.component';
 import { OpportunitiesService } from './shared/services/opportunities.service';
 import { CardSandbox } from './components/card/card.sandbox';
 import { CardController } from './components/card/card.controller';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { ListComponent } from './components/list/list.component';
+import { HomeSandbox } from './components/home.sandbox';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     ChartComponent,
-    CardComponent
+    CardComponent,
+    ListComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     NgxChartsModule,
-    BrowserAnimationsModule 
+    BrowserAnimationsModule,
+    NgSelectModule 
   ],
   providers: [
     ExchangesService,
@@ -36,7 +41,8 @@ import { CardController } from './components/card/card.controller';
     ChartController,
     OpportunitiesService,
     CardSandbox,
-    CardController
+    CardController,
+    HomeSandbox
   ],
   bootstrap: [AppComponent]
 })

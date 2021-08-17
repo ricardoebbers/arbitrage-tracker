@@ -1,9 +1,19 @@
 <div class="home">
-    <div class="card-container">
-        <app-card></app-card>
+    <div class="column1">
+        <h2>12 best opportunities</h2>
+        <app-list [list]="opList" [labelA]="'Opportunity'" [labelB]="'Profit'"></app-list>
     </div>
-    <div class="chart-container">
-        <app-chart></app-chart>
+    <div class="column2">
+        <div class="card-container">
+            <app-card></app-card>
+        </div>
+        <div class="chart-container">
+            <app-chart></app-chart>
+        </div>
+    </div>
+    <div class="column3">
+        <h2>The exchanges</h2>
+        <app-list [list]="exchangesList" [labelA]="'Coin'" [labelB]="'Price'"></app-list>
     </div>
 </div>
   

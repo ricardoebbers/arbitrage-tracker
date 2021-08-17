@@ -3,4 +3,6 @@ export interface IOportunity {
     sellAt: string
     profit: number
     investment: number
+    duration: number
+    positive: boolean
 }

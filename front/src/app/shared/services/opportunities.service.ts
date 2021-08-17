@@ -4,6 +4,7 @@ import { IExchange } from '../interfaces/exchange';
 import { IOportunity } from '../interfaces/oportunity';
 import { WebsocketsService } from './websocket.service';
 import { filter } from 'rxjs/operators';
+import { DEFAULT_INTERPOLATION_CONFIG } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root'
@@ -25,13 +26,14 @@ export class OpportunitiesService {
   }
   private getOportunityData(obj: any): void {
     const OpportunitiesList = []
-    console.log(obj.opportunities)
     for (const oportunity of obj.opportunities) {
       const newOportunity: IOportunity = {
         buyAt: oportunity.buyAt,
         sellAt: oportunity.sellAt,
         profit: oportunity.profit,
         investment: oportunity.investment,
+        duration: oportunity.duration,
+        positive: oportunity.positive
       }
       OpportunitiesList.push(newOportunity)
     }

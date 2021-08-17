@@ -1,0 +1,24 @@
+.list-container {
+    background-color:#C1CFDA;
+    border: 1px solid black;
+    
+    li {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 10px;
+        background-color:#C1CFDA;
+    
+        color: #080404; 
+        font-family: 'Orienta', sans-serif; 
+        font-size: 16px; 
+        padding-bottom: 8px; 
+
+        border-bottom: 1px solid black;
+    
+        .label {
+            color: black;
+            font-weight: bold;
+        }
+    }    
+}

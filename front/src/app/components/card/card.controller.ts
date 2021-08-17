@@ -1,43 +1,58 @@
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { IOportunity } from 'src/app/shared/interfaces/oportunity';
+import { ChartItem } from 'src/app/shared/models/chartItem.model';
 
 @Injectable()
 export class CardController {
-    private opportunities: Map<string, {time: number, oportunity: IOportunity}> = new Map<string, {time: number, oportunity: IOportunity}>()
-    private exchangeA: string = '';
-    private exchangeB: string = '';
+    private opportunities: Map<string, IOportunity> = new Map<string, IOportunity>()
+    public exchangeA: string = '';
+    public exchangeB: string = '';
     private exchangeTopicsList: string[] = [];
     private readonly oportunitySubject: ReplaySubject<IOportunity> = new ReplaySubject<IOportunity>();
     private readonly exchangeTopicsListSubject: Subject<string[]> = new Subject<string[]>();
+    private readonly exchangeValuesSubject: Subject<{name: string, price: number}[]> = new Subject<{name: string, price: number}[]>();
+    private readonly opportunitiesListSubject: Subject<Map<string, IOportunity>> = new Subject<Map<string, IOportunity>>();
 
     constructor(
     ) {
     }
-    // profit -> Dinheiro que vai receber / valor 100
-    // Investment -> Quanto vai ser gasto
 
     public saveNewOpportunities(opportunities: IOportunity[]): void {
         for (const oportunity of opportunities) {
-            const item = this.opportunities.get([oportunity.buyAt, oportunity.sellAt].join(','))
-            const isProfitPositive = oportunity.profit > 0;
-            if (item) {
-                item.oportunity.profit > 0 ? (isProfitPositive ? item.time ++ : item.time = 0) : (isProfitPositive ? item.time = 1 : item.time = 0) 
-                item.oportunity = oportunity
-            } else {
-                this.opportunities.set([oportunity.buyAt, oportunity.sellAt].join(','), {time: isProfitPositive ? 1 : 0, oportunity})
-            }
+            this.opportunities.set([oportunity.buyAt, oportunity.sellAt].join(','), oportunity)
         }
-        console.log('opportunities map: ', this.opportunities)
         this.notifyOportunityValue();
+        this.opportunitiesListSubject.next(this.opportunities);
     }
 
     private notifyOportunityValue(): void {
-        const item = this.opportunities.get([this.exchangeA, this.exchangeB].join(','))
-        console.log('oportunity: ', item);
-        if (item) {
-            this.oportunitySubject.next(item.oportunity)
+        const oportunity = this.opportunities.get([this.exchangeA, this.exchangeB].join(','))
+        if (oportunity) {
+            this.oportunitySubject.next(oportunity)
         }
+    }
+
+    public updateExchangeData(obs: Observable<ChartItem[]>): void {
+        obs.pipe(filter(chartList => {
+            for(const chart of chartList) {
+                if (chart.name === this.exchangeA || chart.name === this.exchangeB) {
+                  return true
+                }
+            }
+            return false
+        }), map(chartList => {
+            const itemList = []
+            for(const chart of chartList) {
+              if (chart.name === this.exchangeA || chart.name === this.exchangeB) {
+                itemList.push({name: chart.name, price: chart.series[chart.series.length - 1].value})
+              }
+            }
+            return itemList
+        })).subscribe( opportunities => {
+            this.exchangeValuesSubject.next(opportunities)
+        });
     }
 
     public updateExchanges(exchangeA: string, exchangeB: string) {
@@ -48,7 +63,6 @@ export class CardController {
 
     public newExchangeTopic(exchangeTopic: string): void {
         this.exchangeTopicsList.push(exchangeTopic)
-        console.log('exchangeList: ', this.exchangeTopicsList)
         this.exchangeTopicsListSubject.next(this.exchangeTopicsList)
     }
 
@@ -58,5 +72,13 @@ export class CardController {
 
     public subscribeExchangesTopicList(): Observable<string[]> {
         return this.exchangeTopicsListSubject.asObservable();
+    }
+
+    public subscribeExchangeValues(): Observable<{name: string, price: number}[]> {
+        return this.exchangeValuesSubject.asObservable();
+    }
+
+    public subscribeListOfOpportunities(): Observable<Map<string, IOportunity>> {
+        return this.opportunitiesListSubject.asObservable();
     }
 }

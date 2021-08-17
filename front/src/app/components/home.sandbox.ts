@@ -18,7 +18,7 @@ export class HomeSandbox {
     this.cardController.subscribeListOfOpportunities().subscribe( opportunitiesList => {
       const list: IList[] = []
       opportunitiesList.forEach(oportunity => {
-        list.push({valueA: [oportunity.buyAt, oportunity.sellAt].join(' x '), valueB: oportunity.profit})
+        list.push({valueA: [oportunity.buyAt, oportunity.sellAt].join(' → '), valueB: oportunity.profit})
       })
       list.sort((opB, opA) => {
         return opA.valueB - opB.valueB
@@ -33,10 +33,10 @@ export class HomeSandbox {
     this.exchangeService.subscribeNewExchanges().subscribe( exchangesList => {
       const list: IList[] = []
       exchangesList.forEach(exchange => {
-        list.push({valueA: exchange.exchange, valueB: exchange.price})
+        list.push({valueA: exchange.exchange, valueB: parseFloat(exchange.price.toFixed(2))})
       })
       list.sort((exchangeB, exchangeA) => {
-        return exchangeA.valueB - exchangeB.valueB
+        return parseFloat((exchangeA.valueB - exchangeB.valueB).toFixed(2))
       })
       opportunitiesSubject.next(list);
     });

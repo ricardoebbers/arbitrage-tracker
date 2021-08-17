@@ -1,13 +1,14 @@
 .list-container {
-    background-color:#C1CFDA;
+    background-color:#e0ecff;
     border: 1px solid black;
+    border-radius: 12px;
     
     li {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        padding: 10px;
-        background-color:#C1CFDA;
+        padding: 12px;
+        border-radius: 12px;
     
         color: #080404; 
         font-family: 'Orienta', sans-serif; 

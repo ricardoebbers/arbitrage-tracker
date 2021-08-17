@@ -9,11 +9,14 @@ const WS_PATH = process.env.WS_PATH;
 const QUEUE_NAME = process.env.QUEUE_NAME;
 const RABBITMQ_URL = process.env.RABBITMQ_URL;
 
-const listeners = []
+const listeners = [];
+const buffer = [];
 
 console.log("Starting WS server...")
 wss = new WebSocketServer({ port: WS_PORT, path: WS_PATH });
 wss.on('connection', async function(ws) {
+  const clonedBuffer = buffer.slice(0);
+  clonedBuffer.forEach(msg => ws.send(msg));
   listeners.push(ws);
   ws.on("close", () => {
     listeners.splice(listeners.indexOf(ws), 1);
@@ -31,6 +34,7 @@ rxAmqp.newConnection(RABBITMQ_URL)
   .map(OpportunityDetector)
   .map(OpportunityAppender)
   .map(msg => JSON.stringify(msg))
+  .doOnNext(addToNewListenerBuffer)
   .subscribe(sendToListeners, console.error, console.log)
 
 function parseToJSON(message) {
@@ -38,6 +42,13 @@ function parseToJSON(message) {
     return JSON.parse(message.content.toString());
   } catch (e) {
     return null;
+  }
+}
+
+function addToNewListenerBuffer(msg) {
+  buffer.push(msg);
+  if (buffer.length > 29) {
+    buffer.shift();
   }
 }
 

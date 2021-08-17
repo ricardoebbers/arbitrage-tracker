@@ -22,5 +22,8 @@ export class ChartItem  {
       value: seriesValue
     }
     this.series.push(series)
+    if (this.series.length > 60) {
+      this.series.shift();
+    }
   }
 }

@@ -47,7 +47,7 @@ function parseToJSON(message) {
 
 function addToNewListenerBuffer(msg) {
   buffer.push(msg);
-  if (buffer.length > 29) {
+  if (buffer.length > 59) {
     buffer.shift();
   }
 }

@@ -1,6 +1,6 @@
 export const ChartConfig: IChartConfig = {
     showLabels: true,
-    animations: true,
+    animations: false,
     xAxis: true,
     yAxis: true,
     showYAxisLabel: true,

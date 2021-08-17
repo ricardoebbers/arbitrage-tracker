@@ -1,6 +1,6 @@
 const DEBUG = false;
 
-module.exports = function calculateExpectedProfit(exchangeA, exchangeB, investment=100) {
+module.exports = function calculateExpectedProfit(exchangeA, exchangeB, investment=1000) {
   const profitA = profitOnBuyFromX(exchangeA, exchangeB, investment);
   const profitB = profitOnBuyFromX(exchangeB, exchangeA, investment);
   if (DEBUG) console.table({ [exchangeA.exchange]: profitA, [exchangeB.exchange]: profitB });
